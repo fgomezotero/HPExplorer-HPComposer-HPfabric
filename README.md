@@ -46,3 +46,97 @@ Quedando el servicio como se muestra a continuación:
       - orderer.example.com
       - couchdb
 ```
+2. Seguimos con la documentación Oficial del Hyperledger Explorer. Clonamos el repositorio de Github y nos movemos para la carpeta examples/net1.
+
+A continuación copiamos todos los materiales criptograficos desde la instalación del Hyperledger Composer para la carpeta crypto como indica la documentación de la propia página. La única diferencia con la presente documentación es el contenido del fichero de configuración config.json, de configurarlo como explica la documentación oficial no vas a lograr que se conecte correctamente el Explorer a la infraestructura de Fabric que tienes en ejecución.
+
+A continuación les dejo un ejemplo de archivo de configuración que me funcionó correctamente:
+```
+{
+  "network-configs": {
+    "network-1": {
+      "version": "1.0",
+      "clients": {
+        "client-1": {
+          "tlsEnable": false,
+          "organization": "Org1",
+          "channel": "composerchannel",
+          "credentialStore": {
+            "path": "./tmp/credentialStore_Org1/credential",
+            "cryptoStore": {
+              "path": "./tmp/credentialStore_Org1/crypto"
+            }
+          }
+        }
+      },
+      "channels": {
+        "composerchannel": {
+          "peers": {
+            "peer0.org1.example.com": {}
+          },
+          "connection": {
+            "timeout": {
+              "peer": {
+                "endorser": "6000",
+                "eventHub": "6000",
+                "eventReg": "6000"
+              }
+            }
+          }
+        }
+      },
+      "organizations": {
+        "Org1": {
+          "mspid": "Org1MSP",
+          "fullpath": false,
+          "adminPrivateKey": {
+            "path":
+              "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
+          },
+          "signedCert": {
+            "path":
+              "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+          }
+        },
+        "OrdererMSP": {
+          "mspid": "OrdererMSP",
+          "adminPrivateKey": {
+            "path":
+              "/tmp/crypto/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore"
+          }
+        }
+      },
+      "peers": {
+        "peer0.org1.example.com": {
+          "tlsCACerts": {
+            "path":
+              "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+          },
+          "url": "grpc://172.17.0.1:7051",
+          "eventUrl": "grpc://172.17.0.1:7053",
+          "grpcOptions": {
+            "ssl-target-name-override": "peer0.org1.example.com"
+          }
+        }
+      },
+      "orderers": {
+        "orderer.example.com": {
+          "url": "grpc://172.17.0.1:7050"
+        }
+      }
+    }
+  },
+  "configtxgenToolPath": "/home/fgo/fabric-samples/bin",
+  "keyValueStore": "/tmp/fabric-client-kvs",
+  "SYNC_START_DATE_FORMAT": "YYYY/MM/DD",
+  "syncStartDate": "2018/11/13",
+  "eventWaitTime": "30000",
+  "license": "Apache-2.0"
+}
+```
+Aclarar que cuando se instala el Hyperledger Composer no constamos con la carpeta de los script de Fabric, por lo tanto seguí los paso como si fuera a instalar Hyperledger Fabric la Basic Network, pero solamente realicé los pasos hasta que me descargó los script.
+
+3. Finalmente ejecutamos el script de despligue de los contenedores pasándole como argumentos la carpeta donde está el fichero de configuración y la red de docker donde están desplegados los contenedores de Fabric.
+#./deploy_explorer.sh net1 composer_default
+
+Espero que les resulte de ayuda!!!.
