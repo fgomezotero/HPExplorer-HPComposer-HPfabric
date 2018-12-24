@@ -1,6 +1,6 @@
 # HPExplorer-HPComposer-HPfabric
 
-Nuestro objetivo es instalar un ambiente de DEV con Hyperledger Fabric, además de Hyperledger Composer y finalmente configurar una herramienta de monitoreo y visualización de los compomentes que conforman la blokchain como es Hyperledger Explorer.
+Nuestro objetivo es instalar un ambiente de DEV con Hyperledger Fabric, además de Hyperledger Composer y finalmente configurar una herramienta de monitoreo y visualización de los compomentes que conforman la blockchain como es Hyperledger Explorer.
 
 Asumimos que se cuenta con un ambiente de Hyperledger Composer para desarrollo instalado siguiendo con la documentación oficial: https://hyperledger.github.io/composer/latest/installing/development-tools
 
