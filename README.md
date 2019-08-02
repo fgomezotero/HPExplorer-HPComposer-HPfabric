@@ -13,6 +13,7 @@ Pasos:
 1. Primeramente ahí que modificar el docker-compose.yml de la instalación del Hyperledger Fabric para añadir una variable a la construcción del servicio "peer0.org1.example.com", la opción a añadir es:
 
 - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
+- CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
 
 Quedando el servicio como se muestra a continuación:
 
@@ -26,6 +27,7 @@ Quedando el servicio como se muestra a continuación:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0.org1.example.com
       - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=composer_default
       - CORE_PEER_LOCALMSPID=Org1MSP
@@ -53,86 +55,45 @@ A continuación copiamos todos los materiales criptograficos desde la instalaci�
 A continuación les dejo un ejemplo de archivo de configuración que me funcionó correctamente:
 ```
 {
-  "network-configs": {
-    "network-1": {
-      "version": "1.0",
-      "clients": {
-        "client-1": {
-          "tlsEnable": false,
-          "organization": "Org1",
-          "channel": "composerchannel",
-          "credentialStore": {
-            "path": "./tmp/credentialStore_Org1/credential",
-            "cryptoStore": {
-              "path": "./tmp/credentialStore_Org1/crypto"
-            }
-          }
-        }
-      },
-      "channels": {
-        "composerchannel": {
-          "peers": {
-            "peer0.org1.example.com": {}
-          },
-          "connection": {
-            "timeout": {
-              "peer": {
-                "endorser": "6000",
-                "eventHub": "6000",
-                "eventReg": "6000"
-              }
-            }
-          }
-        }
-      },
-      "organizations": {
-        "Org1": {
-          "mspid": "Org1MSP",
-          "fullpath": false,
-          "adminPrivateKey": {
-            "path":
-              "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore"
-          },
-          "signedCert": {
-            "path":
-              "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
-          }
-        },
-        "OrdererMSP": {
-          "mspid": "OrdererMSP",
-          "adminPrivateKey": {
-            "path":
-              "/tmp/crypto/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore"
-          }
-        }
-      },
-      "peers": {
-        "peer0.org1.example.com": {
-          "tlsCACerts": {
-            "path":
-              "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
-          },
-          "url": "grpc://172.17.0.1:7051",
-          "eventUrl": "grpc://172.17.0.1:7053",
-          "grpcOptions": {
-            "ssl-target-name-override": "peer0.org1.example.com"
-          }
-        }
-      },
-      "orderers": {
-        "orderer.example.com": {
-          "url": "grpc://172.17.0.1:7050"
-        }
-      }
-    }
-  },
-  "configtxgenToolPath": "/home/fgo/fabric-samples/bin",
-  "keyValueStore": "/tmp/fabric-client-kvs",
-  "SYNC_START_DATE_FORMAT": "YYYY/MM/DD",
-  "syncStartDate": "2018/11/13",
-  "eventWaitTime": "30000",
-  "license": "Apache-2.0"
-}
+	"network-config": {
+	  "org1": {
+		"name": "Org1",
+		"mspid": "Org1MSP",
+		"tlsEnable": false,
+		"peer1": {
+		  "requests": "grpc://172.17.0.1:7051",
+		  "events": "grpc://172.17.0.1:7053",
+		  "server-hostname": "peer0.org1.example.com",
+		  "tls_cacerts":
+			"/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+		},
+		"admin": {
+		  "key":
+			"/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
+		  "cert":
+			"/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+		}
+	  }
+	},
+	"channel": "composerchannel",
+	"orderers": [
+	  {
+		"mspid": "OrdererMSP",
+		"server-hostname": "orderer.example.com",
+		"requests": "grpc://172.17.0.1:7050",
+		"tls_cacerts":
+		  "/tmp/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+	  }
+	],
+	"keyValueStore": "/tmp/fabric-client-kvs",
+	"configtxgenToolPath": "/path to the fabric sample/fabric-samples/bin",
+	"SYNC_START_DATE_FORMAT": "YYYY/MM/DD",
+	"syncStartDate": "2018/01/01",
+	"eventWaitTime": "30000",
+	"license": "Apache-2.0",
+	"version": "1.1"
+  }
+  
 ```
 Aclarar que cuando se instala el Hyperledger Composer no constamos con la carpeta de los script de Fabric, por lo tanto seguí los paso como si fuera a instalar Hyperledger Fabric la Basic Network, pero solamente realicé los pasos hasta que me descargó los script.
 
